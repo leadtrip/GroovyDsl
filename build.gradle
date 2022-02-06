@@ -1,0 +1,23 @@
+plugins {
+    id 'groovy'
+    id 'java'
+    id 'idea'
+}
+
+group 'wood.mike'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation group: 'org.codehaus.groovy', name: 'groovy', version: '3.0.9'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.8.2'
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.8.2'
+    testImplementation "org.spockframework:spock-core:2.0-groovy-3.0"
+}
+
+test {
+    useJUnitPlatform()
+}

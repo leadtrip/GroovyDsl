@@ -1,0 +1,44 @@
+defaultTasks 'chicken', 'hamster'
+
+task chicken {
+    description 'Everyone loves chickens'
+    println 'lay egg'
+}
+
+task hamster {
+    println 'spin'
+}
+
+task hello {
+    doLast {
+        println 'Hello everyone'
+    }
+}
+
+task ordering{
+    doFirst {
+        println 'Doing first'
+    }
+    doFirst {
+        println 'Doing first, getting confusing'        // book talks about avoiding this and using << left shift which has been deprecated
+    }
+    doLast {
+        println 'Doing last'
+    }
+}
+
+task phone {
+    println 'phoning'
+}
+
+task prepare(dependsOn: phone){
+    println 'preparing'
+}
+
+task deliver(dependsOn: prepare) {
+    println 'delivering'
+}
+
+task eat(dependsOn: [phone, prepare, deliver]) {
+    println 'eating'
+}
