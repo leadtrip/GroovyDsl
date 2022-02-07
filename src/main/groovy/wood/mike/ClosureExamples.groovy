@@ -207,17 +207,73 @@ multiParams 9210 // so is Integer as we've implemented doCall for Integer
 // ------------------------------------------------------------------
 // currying
 def indian = {style, meat, rice -> return "$meat $style with $rice rice"}   // indian closure accepts 3 parameters
-def vindaloo = indian.curry 'Vindaloo'      // currying effectively copies the original closure & prepacks arguments, in this case the first argument only
+
+// currying effectively copies the original closure & prepacks however many arguments
+def vindaloo = indian.curry 'Vindaloo'      // in this case the first argument only
 def korma = indian.curry 'Korma', 'Lamb' // and now with 2 aruguments
 
-def vindalooMeal = vindaloo "Chicken", "fried"
-assert vindalooMeal == "Chicken Vindaloo with fried rice"
+assert "Chicken Vindaloo with fried rice" == vindaloo( "Chicken", "fried" )
 
-def kormaMeal = korma "boiled"
-assert kormaMeal == "Lamb Korma with boiled rice"
+assert "Lamb Korma with boiled rice" ==  korma( "boiled" )
 
-def randomMeal = korma.curry 'brown'    // currying an curried closure
-assert randomMeal() == 'Lamb Korma with brown rice'
+def kormaWithBrownRice = korma.curry 'brown'    // currying an already curried closure
+assert kormaWithBrownRice() == 'Lamb Korma with brown rice'
 
-println indian('bacon', 'my', 'egg')
-println vindaloo( 'hog', 'tim' )
+def goneOff = indian.rcurry 'gone off'      // you can also curry from the right
+assert 'Goat Special with gone off rice' == goneOff( 'Special', 'Goat' )
+
+def whateverCurry = indian.ncurry 1, 'pebble'       // you can curry positionally
+assert 'pebble lamp with disco rice' == whateverCurry( 'lamp', 'disco' )
+
+// ------------------------------------------------------------------
+// composition
+def increment = { number ->
+    number + 1
+}
+
+def square = { number ->
+    number * number
+}
+
+def incrementAndSquare = increment >> square     // using >> means we increment then square
+def squareAndIncrement = increment << square    // and << is the opposite
+def incrementAndSquareAndIncrement = increment >> square >> increment
+
+assert 121 == incrementAndSquare(10 )
+assert 101 == squareAndIncrement( 10 )
+assert 122 == incrementAndSquareAndIncrement( 10 )
+
+// ------------------------------------------------------------------
+// trampoline
+
+def factorial
+factorial = {
+    BigDecimal n ->
+        if (n<2)
+            1
+        else
+            n * factorial(n - 1)
+}
+
+factorial(10)
+// factorial(1000) produces StackOverflowError
+
+// using trampoline helps alleviate StackOverflowError, calls are made serially & don't fill the stack
+def factorialTrampoline
+factorialTrampoline = { int n, BigDecimal accumulator = 1 ->
+    if(n<2)
+        accumulator
+    else
+        factorialTrampoline.trampoline(n-1, n*accumulator)
+}
+
+factorialTrampoline(1000000)
+
+// ------------------------------------------------------------------
+// memoization
+
+// results from previous calls of the closure are cached when memoize is applied to closure
+calls = 0
+def addOne = {calls++; it + 1}.memoize()
+def uniqueValues = [1,2,1,2,3,4].each {addOne it}.unique().size()
+assert calls == uniqueValues
