@@ -1,0 +1,3 @@
+import static GeeTwitter.*
+
+search "bbcnews"

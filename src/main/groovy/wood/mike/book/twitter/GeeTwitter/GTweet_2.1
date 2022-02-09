@@ -1,0 +1,18 @@
+#!/usr/bin/env groovy
+package wood.mike.book.twitter.GeeTwitter
+
+import org.codehaus.groovy.control.*
+
+if(args) {
+	def conf = new CompilerConfiguration()
+	conf.setScriptBaseClass("GeeTwitterScript")
+	def shell = new GroovyShell(this.class.classLoader, new Binding(), conf)
+	shell.evaluate (new File(args[0]))
+}
+else {
+    println "Usage: GTweet_2.1 <script>"
+    println "   e.g. GTweet_2.1 EachFollower_2.0.gtwit"
+    println "        GTweet_2.1 EachFriend_2.0.gtwit"
+    println "        GTweet_2.1 ggx_2.0.gtwit"
+    println "        GTweet_2.1 search_2.0.gtwit"
+}
