@@ -57,7 +57,7 @@ class ScriptRunnerSpec extends Specification{
             def command = "cmd /c .\\gradlew -q -b .\\otherbuild.gradle hello"
         when:
             def proc = command.execute()
-            proc.waitFor(10, TimeUnit.SECONDS )
+            proc.waitFor()
         then:
             proc.in.text.trim().endsWith( 'Hello everyone' )
     }
